@@ -180,7 +180,6 @@ def main():
         clusters = kmeans_clustering(rx, ry, ncluster)
         
         if show_animation:
-            cx_, cy_ = clusters.cx, clusters.cy
             visualize(clusters, dt)
 
     print("Done")
