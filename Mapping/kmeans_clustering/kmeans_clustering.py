@@ -26,20 +26,6 @@ class Clusters:
         self.cx = [0.0 for _ in range(nlabel)]
         self.cy = [0.0 for _ in range(nlabel)]
 
-def visualize(clusters, dt):
-    plt.cla()
-    nc = clusters.nlabel
-    cx = [clusters.cx[_] for _ in range(nc)]
-    cy = [clusters.cy[_] for _ in range(nc)]
-    inds = calc_association(cx, cy, clusters)
-    for ic in inds:
-        x, y = calc_labeled_points(ic, clusters)
-        plt.plot(x, y, "x")
-    plt.plot(cx, cy, "o")
-    plt.xlim(-2.0, 10.0)
-    plt.ylim(-2.0, 10.0)
-    plt.pause(dt)
-    
 
 def kmeans_clustering(rx, ry, nc):
 
@@ -49,13 +35,8 @@ def kmeans_clustering(rx, ry, nc):
     MAX_LOOP = 10
     DCOST_TH = 0.1
     pcost = 100.0
-    progress_visualize_time = 0.5
     for loop in range(MAX_LOOP):
         #  print("Loop:", loop)
-        
-        if show_animation:
-            visualize(clusters, progress_visualize_time)
-        
         clusters, cost = update_clusters(clusters)
         clusters = calc_centroid(clusters)
 
@@ -163,24 +144,33 @@ def main():
     cx = [0.0, 8.0]
     cy = [0.0, 8.0]
     npoints = 10
-    rand_d = 4.0
+    rand_d = 3.0
     ncluster = 2
-    trial_limit = 15
-    times = 0
+    sim_time = 15.0
     dt = 1.0
+    time = 0.0
 
-    while times <= trial_limit:
-        print(times, "Times")
-        times += 1
+    while time <= sim_time:
+        print("Time:", time)
+        time += dt
 
         # simulate objects
         cx, cy = update_positions(cx, cy)
         rx, ry = calc_raw_data(cx, cy, npoints, rand_d)
 
         clusters = kmeans_clustering(rx, ry, ncluster)
-        
-        if show_animation:
-            visualize(clusters, dt)
+
+        # for animation
+        if show_animation:  # pragma: no cover
+            plt.cla()
+            inds = calc_association(cx, cy, clusters)
+            for ic in inds:
+                x, y = calc_labeled_points(ic, clusters)
+                plt.plot(x, y, "x")
+            plt.plot(cx, cy, "o")
+            plt.xlim(-2.0, 10.0)
+            plt.ylim(-2.0, 10.0)
+            plt.pause(dt)
 
     print("Done")
 
